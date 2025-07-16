@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -18,11 +19,12 @@ import { AppService } from './app.service';
           username: configService.get('POSTGRES_USER'),
           password: configService.get('POSTGRES_PASSWORD'),
           database: configService.get('POSTGRES_DATABASE'),
-          entities: [],
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: true,
         };
       },
     }),
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
