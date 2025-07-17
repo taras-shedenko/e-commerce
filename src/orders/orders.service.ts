@@ -22,9 +22,9 @@ export class OrdersService {
       if (!product) throw new Error('Product not found!');
       const order = this.orderRepository.create({ ...createOrderDto, product });
       await this.orderRepository.save(order);
-      return order;
+      return { data: order };
     } catch (e: any) {
-      return e.message ?? 'An error occurred!';
+      return { error: e };
     }
   }
 
@@ -46,6 +46,6 @@ export class OrdersService {
       relations: ['product'],
       select: { product: { name: true, price: true, image: true } },
     });
-    return order;
+    return { data: order };
   }
 }

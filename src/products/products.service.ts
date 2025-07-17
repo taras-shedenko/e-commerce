@@ -16,9 +16,9 @@ export class ProductsService {
     try {
       const product = this.productRepository.create(createProductDto);
       await this.productRepository.save(product);
-      return product;
+      return { data: product };
     } catch (e: any) {
-      return e.message ?? 'An error occurred!';
+      return { error: e };
     }
   }
 
@@ -34,6 +34,6 @@ export class ProductsService {
 
   async getProductById(id: string) {
     const product = await this.productRepository.findOne({ where: { id } });
-    return product;
+    return { data: product };
   }
 }
