@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Order } from 'src/orders/entities/order.entity';
 
 @Entity('products')
 export class Product {
@@ -22,6 +23,9 @@ export class Product {
     comment: "a key-value pair that represents the product's specs",
   })
   specs: Record<string, string>;
+
+  @OneToMany(() => Order, (order) => order.product)
+  orders: Order[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
