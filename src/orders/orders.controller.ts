@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 
@@ -12,11 +20,11 @@ export class OrdersController {
   }
 
   @Get()
-  findAll(@Query('page') page: string, @Query('limit') limit: string) {
-    return this.ordersService.getOrders(
-      parseInt(page) || 1,
-      parseInt(limit) || 10,
-    );
+  getOrders(
+    @Query('page', new ParseIntPipe({ optional: true })) page: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit: number,
+  ) {
+    return this.ordersService.getOrders(page ?? 1, limit ?? 10);
   }
 
   @Get(':id')

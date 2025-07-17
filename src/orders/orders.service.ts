@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Order } from 'src/orders/entities/order.entity';
+import { PaginationService } from 'src/common/pagination/pagination.service';
+import { Order } from './entities/order.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 
@@ -10,6 +11,7 @@ export class OrdersService {
   constructor(
     @InjectRepository(Order) private orderRepository: Repository<Order>,
     @InjectRepository(Product) private productRepository: Repository<Product>,
+    private paginationService: PaginationService,
   ) {}
 
   async create(createOrderDto: CreateOrderDto) {
@@ -17,7 +19,7 @@ export class OrdersService {
       const product = await this.productRepository.findOne({
         where: { id: createOrderDto.productId },
       });
-      if (!product) return 'Product not found!';
+      if (!product) throw new Error('Product not found!');
       const order = this.orderRepository.create({ ...createOrderDto, product });
       await this.orderRepository.save(order);
       return order;
@@ -33,7 +35,9 @@ export class OrdersService {
       relations: ['product'],
       select: { product: { name: true, price: true, image: true } },
     });
-    return orders;
+    const total = await this.orderRepository.count();
+    const meta = this.paginationService.getPaginationMeta(page, limit, total);
+    return { data: orders, meta };
   }
 
   async getOrderById(id: string) {

@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 
@@ -12,11 +20,11 @@ export class ProductsController {
   }
 
   @Get()
-  getProducts(@Query('page') page: string, @Query('limit') limit: string) {
-    return this.productsService.getProducts(
-      parseInt(page) || 1,
-      parseInt(limit) || 10,
-    );
+  getProducts(
+    @Query('page', new ParseIntPipe({ optional: true })) page: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit: number,
+  ) {
+    return this.productsService.getProducts(page ?? 1, limit ?? 10);
   }
 
   @Get(':id')

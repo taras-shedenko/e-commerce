@@ -1,31 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PaginationService } from 'src/common/pagination/pagination.service';
 import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 
 @Injectable()
 export class ProductsService {
   constructor(
-    @InjectRepository(Product) private producRepository: Repository<Product>,
+    @InjectRepository(Product) private productRepository: Repository<Product>,
+    private paginationService: PaginationService,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
-    const product = this.producRepository.create(createProductDto);
-    await this.producRepository.save(product);
-    return { message: 'Product created successfully', product };
+    try {
+      const product = this.productRepository.create(createProductDto);
+      await this.productRepository.save(product);
+      return product;
+    } catch (e: any) {
+      return e.message ?? 'An error occurred!';
+    }
   }
 
   async getProducts(page: number, limit: number) {
-    const products = await this.producRepository.find({
+    const products = await this.productRepository.find({
       skip: (page - 1) * limit,
       take: limit,
     });
-    return products;
+    const total = await this.productRepository.count();
+    const meta = this.paginationService.getPaginationMeta(page, limit, total);
+    return { data: products, meta };
   }
 
   async getProductById(id: string) {
-    const product = await this.producRepository.findOne({ where: { id } });
+    const product = await this.productRepository.findOne({ where: { id } });
     return product;
   }
 }
