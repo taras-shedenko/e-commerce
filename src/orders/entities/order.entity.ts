@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
 import { Product } from 'src/products/entities/product.entity';
 
 export enum OrderStatus {
@@ -21,6 +22,9 @@ export class Order {
 
   @Column('decimal', { precision: 5, scale: 2, default: 0 })
   totalSum: number;
+
+  @ManyToOne(() => User, (user) => user.orders)
+  customer: User;
 
   @ManyToOne(() => Product, (product) => product.orders)
   product: Product;

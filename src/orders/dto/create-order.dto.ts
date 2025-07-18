@@ -2,6 +2,7 @@ import { IsString, IsUUID, IsDecimal, IsPositive } from 'class-validator';
 
 export class CreateOrderDto {
   @IsString({ message: 'customerId must be a string' })
+  @IsUUID('all', { message: 'customerId must be a valid UUID' })
   customerId: string;
 
   @IsString({ message: 'productId must be a string' })
