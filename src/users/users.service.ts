@@ -10,13 +10,9 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
   async create(createUserDto: CreateUserDto) {
-    try {
-      const user = this.userRepository.create(createUserDto);
-      await this.userRepository.save(user);
-      return { data: user };
-    } catch (e) {
-      return { error: e };
-    }
+    const user = this.userRepository.create(createUserDto);
+    await this.userRepository.save(user);
+    return { data: user };
   }
 
   async getUsers() {
@@ -25,7 +21,7 @@ export class UsersService {
 
   async getUserById(id: string) {
     return {
-      data: await this.userRepository.find({
+      data: await this.userRepository.findOne({
         where: { id },
         relations: ['orders'],
       }),
@@ -34,7 +30,7 @@ export class UsersService {
 
   async getUserByUsername(username: string) {
     return {
-      data: await this.userRepository.find({
+      data: await this.userRepository.findOne({
         where: { username },
         relations: ['orders'],
       }),
